@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Calendar Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1E40AF;
+      --success: #10B981;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-500: #6B7280;
+      --gray-900: #111827;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      background-color: var(--gray-50);
+      color: var(--gray-900);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      padding: 24px 16px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2563EB, #7C3AED);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--gray-500);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      margin: 24px 0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      border: 2px solid var(--gray-200);
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 140px;
+      transition: all 0.2s ease;
+      background-color: var(--gray-50);
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      background-color: white;
+    }
+
+    .button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .success-button {
+      background: var(--success);
+    }
+
+    .success-button:hover {
+      background: #059669;
+    }
+
+    .loading {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .loading-spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--gray-200);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .example-card {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .example-card:hover {
+      background: var(--gray-50);
+      border-color: var(--primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px 0;
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .card {
+        padding: 24px;
+        border-radius: 20px;
+      }
+
+      .button {
+        padding: 14px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 2V5" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+        <path d="M16 2V5" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 8H21" stroke="#2563EB" stroke-width="2"/>
+        <rect x="3" y="4" width="18" height="18" rx="2" stroke="#2563EB" stroke-width="2"/>
+        <path d="M8 11H16" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 15H13" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <h1>AI Calendar Assistant</h1>
+      <p class="subtitle">Transform your text into calendar events instantly with AI</p>
+      <p class="subtitle"> </p>
+<div style="background-color: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-bottom: 20px; border-radius: 5px;">
+  <p style="color: #555; font-size: 14px;">
+    <strong> - < me@w8o.org > : Note</strong> Please include the full date (year, month, and day) when entering event details to avoid confusion. 
+    For example, write <em>"2024 Jan Friday at 12:30 PM for 1 hour"</em> instead of <em>"Friday at 12:30 PM for 1 hour."</em>
+  </p>
+</div>
+
+    </header>
+    
+    <main>
+      <div class="card">
+        <form id="eventForm" class="form">
+          <label for="text" class="form-label">What would you like to schedule?</label>
+          <textarea 
+            id="text" 
+            name="text" 
+            placeholder="Describe your event in natural language. For example: 'Meeting with John tomorrow at 2pm for 1 hour'"
+            class="form-textarea"
+          ></textarea>
+          <div style="height: 16px"></div>
+          <button type="submit" class="button">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Generate Event
+          </button>
+        </form>
+
+        <div class="loading" id="loading">
+          <div class="loading-spinner"></div>
+          <span>Processing your request...</span>
+        </div>
+              <section id="outputSection" class="output-section" style="display: none;">
+        <div class="card">
+          <button id="addToCalendarButton" class="button success-button">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+            </svg>
+            Add to Calendar
+          </button>
+        </div>
+      </section>
+    </main>
+
+<div class="examples">
+  <div class="example-card" onclick="fillExample(this)">
+    "Team meeting on 2024 Jan 8th Monday at 10 AM for 2 hours"
+  </div>
+  <div class="example-card" onclick="fillExample(this)">
+    "Lunch with Sarah on 2024 Jan 12th Friday at 12:30 PM for 1 hour"
+  </div>
+  <div class="example-card" onclick="fillExample(this)">
+    "Train trip on 2024 Jan 12th Friday at 12:30 PM for 1 hour"
+  </div>
+  <div class="example-card" onclick="fillExample(this)">
+    "Dentist appointment on 2024 Jan 15th Monday at 2:30 PM for 1 hour"
+  </div>
+</div>
+
+
+
+
+    <footer>
+      <p>&copy; 2024 Smart Calendar Assistant - Built with Love</p>
+    </footer>
+  </div>
+
+  <script>
+    const form = document.getElementById("eventForm");
+    const outputSection = document.getElementById("outputSection");
+    const addToCalendarButton = document.getElementById("addToCalendarButton");
+    const loading = document.getElementById("loading");
+
+    function fillExample(element) {
+      document.getElementById("text").value = element.textContent.trim();
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const text = document.getElementById("text").value;
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      
+      outputSection.style.display = "none";
+      loading.style.display = "flex";
+      
+      if (!text.trim()) {
+        alert("Please enter event details to continue.");
+        loading.style.display = "none";
+        return;
+      }
+
+      try {
+        const response = await fetch("/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, timeZone: userTimeZone }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert(`Error: ${error.error}`);
+          console.error("Server error:", error.details);
+          return;
+        }
+
+        const data = await response.json();
+        const blob = new Blob([data.icsContent], { type: "text/calendar" });
+        const url = URL.createObjectURL(blob);
+
+        addToCalendarButton.onclick = () => {
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "event.ics";
+          a.click();
+        };
+
+        outputSection.style.display = "block";
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+        console.error("Request error:", error);
+      } finally {
+        loading.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
