@@ -28,7 +28,7 @@ Easily turn text into calendar events!
 1. Clone this repository:
 
 ```bash
-   git clone https://github.com/w8oo/ai-calendar-generator.git
+git clone https://github.com/w8oo/ai-calendar-generator.git
 ```
 2. Install dependencies:
 
