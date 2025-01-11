@@ -3,22 +3,19 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
 const { createEvents } = require("ics");
-const { DateTime } = require("luxon"); // For time handling
+const { DateTime } = require("luxon"); 
 
 const app = express();
 const PORT = 3000;
 
-// Replace with your Gemini API key
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-// Middleware
 app.use(bodyParser.json());
-app.use(express.static("public")); // Serve the frontend files from the "public" folder
+app.use(express.static("public")); 
 
-// Route to process user input and return .ics content
 app.post("/generate", async (req, res) => {
   const userInput = req.body.text;
-  const userTimeZone = req.body.timeZone; // Get the user's time zone from the request
+  const userTimeZone = req.body.timeZone; 
 
   if (!userInput || !userTimeZone) {
     console.error("Error: Missing input text or time zone.");
@@ -48,22 +45,19 @@ app.post("/generate", async (req, res) => {
 
     console.log("Gemini API response:", JSON.stringify(geminiResponse.data, null, 2));
 
-    // Extract the response text from Gemini
     const candidates = geminiResponse.data?.candidates;
     if (!candidates || candidates.length === 0) {
       console.error("Error: No candidates returned from Gemini API.");
       return res.status(500).json({ error: "No candidates returned from Gemini API." });
     }
 
-    // Extract the content field from the first candidate
     const geminiOutput = candidates[0]?.content;
 
-    // Check if content is an object and extract the text field
     let rawText;
     if (typeof geminiOutput === "object" && geminiOutput.parts && geminiOutput.parts.length > 0) {
-      rawText = geminiOutput.parts[0].text; // Extract the text from the parts array
+      rawText = geminiOutput.parts[0].text; 
     } else if (typeof geminiOutput === "string") {
-      rawText = geminiOutput; // If it's already a string, use it directly
+      rawText = geminiOutput; 
     } else {
       console.error("Error: Unexpected Gemini API response format.");
       return res.status(500).json({ error: "Unexpected Gemini API response format." });
@@ -71,12 +65,10 @@ app.post("/generate", async (req, res) => {
 
     console.log("Extracted raw text:", rawText);
 
-    // Remove Markdown formatting (triple backticks and "json" label)
     rawText = rawText.replace(/```json\n/, "").replace(/```\n?$/, "");
 
     console.log("Cleaned JSON string:", rawText);
 
-    // Parse the cleaned JSON string
     let events;
     try {
       events = JSON.parse(rawText);
@@ -95,9 +87,7 @@ app.post("/generate", async (req, res) => {
 
     // Step 2: Adjust times and generate .ics content
     const icsEvents = events.map((event) => {
-      // Adjust start time by subtracting 3 hours
       const startDateTime = DateTime.fromFormat(event.start, "yyyy-MM-dd HH:mm", { zone: userTimeZone }).minus({ hours: 3 });
-      // Adjust end time by subtracting 3 hours (if end time is provided)
       const endDateTime = event.end
         ? DateTime.fromFormat(event.end, "yyyy-MM-dd HH:mm", { zone: userTimeZone }).minus({ hours: 3 })
         : null;
@@ -133,7 +123,6 @@ app.post("/generate", async (req, res) => {
 
     console.log("Generated .ics content:", value);
 
-    // Send the .ics content back to the frontend
     res.json({ icsContent: value });
   } catch (error) {
     console.error("Error processing request:", error.response?.data || error.message);
@@ -141,7 +130,6 @@ app.post("/generate", async (req, res) => {
   }
 });
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
