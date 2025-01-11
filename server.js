@@ -87,10 +87,10 @@ app.post("/generate", async (req, res) => {
 
     // Step 2: Adjust times and generate .ics content
     const icsEvents = events.map((event) => {
-      const startDateTime = DateTime.fromFormat(event.start, "yyyy-MM-dd HH:mm", { zone: userTimeZone }).minus({ hours: 3 });
-      const endDateTime = event.end
-        ? DateTime.fromFormat(event.end, "yyyy-MM-dd HH:mm", { zone: userTimeZone }).minus({ hours: 3 })
-        : null;
+      const startDateTime = DateTime.fromFormat(event.start, "yyyy-MM-dd HH:mm", { zone: userTimeZone });
+const endDateTime = event.end
+    ? DateTime.fromFormat(event.end, "yyyy-MM-dd HH:mm", { zone: userTimeZone })
+    : null;
 
       return {
         title: event.title,
