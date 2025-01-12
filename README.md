@@ -16,6 +16,12 @@ Easily turn text into calendar events!
 
 ---
 
+## Live-Demo
+
+https://free-cats.net/ai-calendar-generator/
+
+---
+
 ## Requirements
 
 - Node.js installed.
