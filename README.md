@@ -4,7 +4,7 @@ Easily turn text into calendar events!
 
 ## What It Does
 
-**AI Calendar Generator** takes your text (e.g., "Meeting on Jan 15, 2024, at 3 PM"), sends it to Google AI (Gemini), and creates a `.ics` file. You can download the file or click a button to add it directly to your calendar.
+**AI Calendar Generator** takes your text (e.g., "Meeting on Jan 15, 2024, at 3 PM"), sends it to an AI, and creates a `.ics` file. You can download the file or click a button to add it directly to your calendar.
 
 ---
 
@@ -25,7 +25,7 @@ https://free-cats.net/ai-calendar-generator/
 ## Requirements
 
 - Node.js installed.
-- Access to Google AI (Gemini).
+- Access to any AI module.
 
 ---
 
